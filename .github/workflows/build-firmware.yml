@@ -1,0 +1,36 @@
+name: Firmware build
+
+on:
+  push:
+  workflow_call:
+
+jobs:
+  build-firmware:
+    runs-on: ubuntu-latest
+    container:
+      image: zephyrprojectrtos/ci:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Setup zephyr SDK for current user
+      run: /opt/toolchains/zephyr-sdk-*/setup.sh -t all -h -c
+
+    - name: Download zephyr
+      run: west init -l firmware && west update
+
+    - run: source zephyr/zephyr-env.sh
+  
+    - name: Build firmware
+      run: west build firmware
+
+    - name: Upload artifacts to github
+      uses: actions/upload-artifact@v3
+      with:
+        name: voltix_gateway_binary
+        path: build/zephyr/zephyr.hex

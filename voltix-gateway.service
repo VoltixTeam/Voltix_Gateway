@@ -1,0 +1,6 @@
+[Unit]
+Description=Voltix Gateway Server
+
+[Service]
+ExecStart=/usr/bin/voltix-gateway -vv -h 0.0.0.0 -p 8000 server
+Restart=no
